@@ -31,7 +31,7 @@ pub mod insurance {
         insurance_id: String,
         coverage: u64,
         premium: u64,
-        minimum_commission: u32,
+        minimum_commission: i64,
         deductible: u64,
         expiry: i64,
         metadata_link: String,

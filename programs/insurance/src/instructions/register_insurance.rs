@@ -37,7 +37,7 @@ pub fn handler(
     insurance_id: String,
     coverage: u64,
     premium: u64,
-    minimum_commission: u32,
+    minimum_commission: i64,
     deductible: u64,
     expiry: i64,
     metadata_link: String,
@@ -48,7 +48,7 @@ pub fn handler(
 
     // assumes minimum commision in format like 678 for 67.8%
     require!(
-        0 < minimum_commission && minimum_commission < 1000,
+        0 <= minimum_commission && minimum_commission < 1000,
         InsuranceEnumError::OutsideValidRange
     );
     require!(

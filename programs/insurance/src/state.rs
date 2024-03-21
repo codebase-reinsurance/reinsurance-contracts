@@ -18,7 +18,7 @@ pub struct Insurance {
     pub insurer: Pubkey,
     pub coverage: u64,
     pub premium: u64,
-    pub minimum_commission: u32,
+    pub minimum_commission: i64,
     pub deductible: u64,
     pub expiry: i64,
     #[max_len(100)]

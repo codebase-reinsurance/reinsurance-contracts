@@ -12,7 +12,7 @@ pub struct InsuranceCreated {
     pub insurance_id: String,
     pub coverage: u64,
     pub premium: u64,
-    pub minimum_commission: u32,
+    pub minimum_commission: i64,
     pub deductible: u64,
     pub expiry: i64,
     pub metadata_link: String,
