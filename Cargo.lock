@@ -1069,7 +1069,6 @@ dependencies = [
 name = "insurance"
 version = "0.1.0"
 dependencies = [
- "ahash 0.8.6",
  "anchor-lang",
  "anchor-spl",
  "solana-program",
