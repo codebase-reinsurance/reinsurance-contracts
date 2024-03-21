@@ -22,8 +22,20 @@ pub mod insurance {
         register_insurer::handler(ctx, verifying_documents)
     }
 
-    pub fn register_lp(ctx: Context<RegisterLP>) -> Result<()> {
-        register_lp::handler(ctx)
+    pub fn register_lp(
+        ctx: Context<RegisterLP>,
+        ideal_size: u64,
+        token_name: String,
+        token_symbol: String,
+        token_metadata_uri: String,
+    ) -> Result<()> {
+        register_lp::handler(
+            ctx,
+            ideal_size,
+            token_name,
+            token_symbol,
+            token_metadata_uri,
+        )
     }
 
     pub fn register_insurance(
@@ -129,15 +141,6 @@ pub mod insurance {
             proposed_undercollaterization,
             proposal_docs,
         )
-    }
-
-    pub fn tokenise_lp(
-        ctx: Context<TokeniseLP>,
-        token_name: Option<String>,
-        token_symbol: Option<String>,
-        token_metadata_uri: Option<String>,
-    ) -> Result<()> {
-        tokenise_lp::handler(ctx, token_name, token_symbol, token_metadata_uri)
     }
 
     pub fn vote_claim(

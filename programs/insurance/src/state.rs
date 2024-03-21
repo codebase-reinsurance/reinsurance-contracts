@@ -39,7 +39,7 @@ pub struct LP {
     pub max_undercollaterization_promised: u64,
     #[max_len(20)]
     pub undercollaterization_promised: Vec<u64>,
-    pub tokenised: bool,
+    pub ideal_size: u64,
 }
 
 #[account]
