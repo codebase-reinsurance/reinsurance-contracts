@@ -53,6 +53,15 @@ pub struct ReInsuranceProposal {
     #[max_len(100)]
     pub proposal_docs: String,
     pub proposal_accepted: bool,
+    pub proposal_sent: bool,
+    pub proposal_vote: u64,
+    pub proposal_vote_start: i64,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ReInsuranceVoteAccount {
+    pub bump: u8,
 }
 
 #[account]
@@ -96,7 +105,7 @@ pub struct Claim {
     pub claim_amount: u64,
     #[max_len(100)]
     pub claim_metadata_link: String,
-    pub claim_voting_start: Option<i64>,
+    pub claim_voting_start: i64,
     pub vote_for: u64,
     pub vote_against: u64,
     pub accepted: Option<bool>,

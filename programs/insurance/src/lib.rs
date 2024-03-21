@@ -60,6 +60,19 @@ pub mod insurance {
         )
     }
 
+    pub fn propose_insurance_proposal(
+        ctx: Context<SendInsuranceProposal>,
+        proposed_commision: u64,
+        proposed_undercollaterization: u64,
+        proposal_docs: String,
+    ) -> Result<()> {
+        propose_insurance_proposal::handler(
+            ctx,
+            proposed_commision,
+            proposed_undercollaterization,
+            proposal_docs,
+        )
+    }
     pub fn accept_reinsurance_proposal(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
         accept_reinsurance_proposal::handler(ctx)
     }
@@ -129,20 +142,6 @@ pub mod insurance {
         release_security::handler(ctx)
     }
 
-    pub fn send_insurance_proposal(
-        ctx: Context<SendInsuranceProposal>,
-        proposed_commision: u64,
-        proposed_undercollaterization: u64,
-        proposal_docs: String,
-    ) -> Result<()> {
-        send_insurance_proposal::handler(
-            ctx,
-            proposed_commision,
-            proposed_undercollaterization,
-            proposal_docs,
-        )
-    }
-
     pub fn vote_claim(
         ctx: Context<VoteClaim>,
         vote_amount: u64,
@@ -153,5 +152,16 @@ pub mod insurance {
 
     pub fn vote_strategy(ctx: Context<VoteStrategy>, vote_amount: u64) -> Result<()> {
         vote_strategy::handler(ctx, vote_amount)
+    }
+
+    pub fn vote_insurance_proposal(
+        ctx: Context<VoteInsuranceProposal>,
+        transfer_amount: u64,
+    ) -> Result<()> {
+        vote_insurance_proposal::handler(ctx, transfer_amount)
+    }
+
+    pub fn refund_proposal_vote(ctx: Context<RefundProposalVote>) -> Result<()> {
+        refund_proposal_vote::handler(ctx)
     }
 }

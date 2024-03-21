@@ -59,16 +59,10 @@ pub fn handler(ctx: Context<VoteClaim>, vote_amount: u64, vote_direction: bool) 
     let voter_token_account = &mut ctx.accounts.voter_token_account;
     let token_program = &ctx.accounts.token_program;
     let current_time = Clock::get()?.unix_timestamp;
-
-    match claim.claim_voting_start {
-        None => claim.claim_voting_start = Some(current_time),
-        Some(voting_start) => {
-            require!(
-                current_time - voting_start <= MONTH,
-                InsuranceEnumError::ClaimVotingClosed
-            )
-        }
-    };
+    require!(
+        current_time - claim.claim_voting_start <= MONTH,
+        InsuranceEnumError::ClaimVotingClosed
+    );
 
     claim_vote_account.bump = ctx.bumps.claim_vote_account;
     claim_vote_account.vote_amount = vote_amount;

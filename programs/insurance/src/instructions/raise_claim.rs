@@ -59,13 +59,14 @@ pub fn handler(
 ) -> Result<()> {
     let claim = &mut ctx.accounts.claim;
     let proposal = &ctx.accounts.proposal;
+    let current_time = Clock::get()?.unix_timestamp;
 
     claim.bump = ctx.bumps.claim;
     claim.reinsurance = proposal.key();
     claim.claim_id = claim_id;
     claim.claim_amount = claim_amount;
     claim.claim_metadata_link = claim_metadata_link.clone();
-    claim.claim_voting_start = None;
+    claim.claim_voting_start = current_time;
     claim.vote_for = 0;
     claim.vote_against = 0;
     claim.accepted = None;

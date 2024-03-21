@@ -48,6 +48,16 @@ pub struct ReInsuranceProposalAccepted {
 }
 
 #[event]
+pub struct ReInsuranceProposalProposed {
+    pub lp: Pubkey,
+    pub proposer: Pubkey,
+    pub proposed_commision: u64,
+    pub proposed_undercollaterization: u64,
+    pub insurance: Pubkey,
+    pub proposal_docs: String,
+}
+
+#[event]
 pub struct ReInsuranceCalledOff {
     pub reinsurance: Pubkey,
 }
@@ -133,4 +143,22 @@ pub struct StrategyExecuted {
 #[event]
 pub struct StrategyBlocked {
     pub strategy: Pubkey,
+}
+
+#[event]
+pub struct InsuranceProposalVoted {
+    pub voter: Pubkey,
+    pub proposal: Pubkey,
+    pub transfer_amount: u64,
+}
+
+#[event]
+pub struct ProposalVoteRefunded {
+    pub voter: Pubkey,
+    pub proposal: Pubkey,
+}
+
+#[event]
+pub struct ProposalSent {
+    pub proposal: Pubkey,
 }

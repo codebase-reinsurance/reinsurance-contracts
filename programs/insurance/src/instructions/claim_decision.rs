@@ -16,7 +16,7 @@ pub fn handler(ctx: Context<ClaimDecision>) -> Result<()> {
     let current_time = Clock::get()?.unix_timestamp;
 
     require!(
-        current_time - claim.claim_voting_start.unwrap() > MONTH,
+        current_time - claim.claim_voting_start > MONTH,
         InsuranceEnumError::DecisionNotYetReleased
     );
 

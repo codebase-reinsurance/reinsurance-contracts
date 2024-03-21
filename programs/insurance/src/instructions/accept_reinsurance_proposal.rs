@@ -31,6 +31,7 @@ pub struct AcceptReinsuranceProposal<'info> {
             proposal.lp_owner.as_ref(),
             insurance.key().as_ref()
         ],
+        constraint = proposal.proposal_sent == true,
         bump=proposal.bump
     )]
     pub proposal: Account<'info, ReInsuranceProposal>,

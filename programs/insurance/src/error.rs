@@ -77,4 +77,16 @@ pub enum InsuranceEnumError {
     // 6018
     #[msg("Strategy blocked due to security reasons")]
     StrategyBlocked,
+
+    // 6019
+    #[msg("Voting on insurance proposal ended")]
+    VoteInsuranceProposalEnded,
+
+    // 6020
+    #[msg("Voting on insurance proposal has not ended yet")]
+    VotingOnInsuranceProposalOngoing,
+
+    // 6021
+    #[msg("Voting did not accept this insurance proposal")]
+    VoteOnInsuranceProposalUnSuccessful,
 }
