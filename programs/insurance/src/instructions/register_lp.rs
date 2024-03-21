@@ -86,9 +86,9 @@ pub fn handler(
 
     // On-chain token metadata for the mint
     let data_v2 = DataV2 {
-        name: token_name,
-        symbol: token_symbol,
-        uri: token_metadata_uri,
+        name: token_name.clone(),
+        symbol: token_symbol.clone(),
+        uri: token_metadata_uri.clone(),
         seller_fee_basis_points: 0,
         creators: None,
         collection: None,
@@ -125,7 +125,11 @@ pub fn handler(
     )?;
 
     emit!(LPCreated {
-        lp_creator: lp_creator.key()
+        lp_creator: lp_creator.key(),
+        token_name: token_name,
+        token_metadata_uri: token_metadata_uri,
+        token_symbol: token_symbol,
+        ideal_size: ideal_size
     });
 
     Ok(())

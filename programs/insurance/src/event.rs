@@ -21,6 +21,10 @@ pub struct InsuranceCreated {
 #[event]
 pub struct LPCreated {
     pub lp_creator: Pubkey,
+    pub token_name: String,
+    pub token_metadata_uri: String,
+    pub token_symbol: String,
+    pub ideal_size: u64,
 }
 
 #[event]
