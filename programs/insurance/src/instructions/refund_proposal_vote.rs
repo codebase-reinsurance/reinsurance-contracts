@@ -15,6 +15,7 @@ use anchor_spl::{
 pub struct RefundProposalVote<'info> {
     pub voter: Signer<'info>,
     #[account(
+        mut,
         associated_token::mint = tokenised_mint,
         associated_token::authority = voter,
     )]
@@ -75,7 +76,7 @@ pub struct RefundProposalVote<'info> {
 pub fn handler(ctx: Context<RefundProposalVote>) -> Result<()> {
     let proposal = &ctx.accounts.proposal;
     let token_program = &ctx.accounts.token_program;
-    let voter_token_account = &ctx.accounts.voter_token_account;
+    let voter_token_account = &mut ctx.accounts.voter_token_account;
     let vote_proposal_account = &mut ctx.accounts.vote_proposal_account;
     let vote_proposal_token_account = &mut ctx.accounts.vote_proposal_token_account;
     let voter = &ctx.accounts.voter;

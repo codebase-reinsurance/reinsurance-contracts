@@ -28,7 +28,7 @@ pub struct AcceptReinsuranceProposal<'info> {
     #[account(
         mut,
         seeds = [
-            proposal.lp_owner.as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref()
         ],
         constraint = proposal.proposal_sent == true,

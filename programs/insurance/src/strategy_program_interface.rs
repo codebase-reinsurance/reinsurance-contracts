@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::pubkey;
 
-static IDS: [Pubkey; 1] = [pubkey!("55kBY9yxqSC42boV8PywT2gqGzgLi5MPAtifNRgPNezF")];
+static IDS: [Pubkey; 1] = [pubkey!("5xFECAW3QY9nwfFSHhLAatHKZxcLv1ZtrMJEMs18rFik")];
 
 #[derive(Clone)]
 pub struct StrategyInterface;

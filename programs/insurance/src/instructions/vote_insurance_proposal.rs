@@ -83,10 +83,13 @@ pub struct VoteInsuranceProposal<'info> {
 pub fn handler(ctx: Context<VoteInsuranceProposal>, transfer_amount: u64) -> Result<()> {
     let voter_token_account = &mut ctx.accounts.voter_token_account;
     let vote_proposal_token_account = &mut ctx.accounts.vote_proposal_token_account;
+    let vote_proposal_account = &mut ctx.accounts.vote_proposal_account;
     let voter = &mut ctx.accounts.voter;
     let token_program = &ctx.accounts.token_program;
     let proposal = &mut ctx.accounts.proposal;
     let current_time = Clock::get()?.unix_timestamp;
+
+    vote_proposal_account.bump = ctx.bumps.vote_proposal_account;
 
     require!(
         current_time - proposal.proposal_vote_start < MONTH,

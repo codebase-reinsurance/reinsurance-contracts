@@ -65,9 +65,15 @@ function calculate_expiry_time(
 
   return expiry;
 }
+
+function sleep(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 export {
   create_keypair,
   get_pda_from_seeds,
   get_metadata_account,
   calculate_expiry_time,
+  sleep,
 };

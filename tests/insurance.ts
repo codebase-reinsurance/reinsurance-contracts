@@ -5,6 +5,7 @@ import {
   get_pda_from_seeds,
   get_metadata_account,
   calculate_expiry_time,
+  sleep,
 } from "./helper";
 import {
   insurerDescription,
@@ -13,11 +14,11 @@ import {
   minimumCommission,
   premium,
   deductible,
+  mintAmount,
   insuranceMetadataLink,
   proposedCommision,
   proposeduUndercollaterization,
   proposalMetadataLink,
-  mintAmount,
   securityAmount,
   TOKEN_METADATA_PROGRAM_ID,
   premiumMultiplier,
@@ -25,6 +26,14 @@ import {
   tokenName,
   tokenimage,
   tokenMetadata,
+  strategyId,
+  streamPayment,
+  streamEvery,
+  numberOfStreams,
+  strategyProgram,
+  claimId,
+  claimAmount,
+  claimMetadataLink,
 } from "./constant";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -189,7 +198,7 @@ describe("insurance", () => {
       mintAddress,
       securityAddrUSDCAccount.address,
       global.lpCreator,
-      securityAmount.toNumber()
+      mintAmount
     );
 
     const lpMintAccount = await getAssociatedTokenAddress(
@@ -224,5 +233,169 @@ describe("insurance", () => {
     global.mintAddress = mintAddress;
     global.securityAddr = securityAddr;
     global.securityAddrUSDCAccount = securityAddrUSDCAccount;
+    global.securityAdrrTokenAccount = securityAdrrTokenAccount;
   });
+  it("Vote on insurance proposal", async () => {
+    const voteProposalAccount = await get_pda_from_seeds([
+      Buffer.from("vote"),
+      global.proposal.toBuffer(),
+      global.securityAddr.publicKey.toBuffer(),
+    ]);
+    const voteProposalTokenAccount = await getAssociatedTokenAddress(
+      global.tokenisedMint,
+      voteProposalAccount,
+      true
+    );
+    await program.methods
+      .voteInsuranceProposal(securityAmount)
+      .accounts({
+        voter: global.securityAddr.publicKey,
+        voterTokenAccount: global.securityAdrrTokenAccount,
+        tokenisedMint: global.tokenisedMint,
+        voteProposalAccount: voteProposalAccount,
+        voteProposalTokenAccount: voteProposalTokenAccount,
+        insurance: global.insurance,
+        proposal: global.proposal,
+        lp: global.lp,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.securityAddr])
+      .rpc(rpcConfig);
+    global.voteProposalAccount = voteProposalAccount;
+    global.voteProposalTokenAccount = voteProposalTokenAccount;
+  });
+  it("Get insurance proposal vote money back", async () => {
+    await sleep(5);
+    await program.methods
+      .refundProposalVote()
+      .accounts({
+        voter: global.securityAddr.publicKey,
+        voterTokenAccount: global.securityAdrrTokenAccount,
+        lp: global.lp,
+        insurance: global.insurance,
+        proposal: global.proposal,
+        tokenisedMint: global.tokenisedMint,
+        voteProposalAccount: global.voteProposalAccount,
+        voteProposalTokenAccount: global.voteProposalTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.securityAddr])
+      .rpc(rpcConfig);
+  });
+  it("Send insurance Proposal", async () => {
+    const notifier = await create_keypair();
+    await program.methods
+      .acceptProposal()
+      .accounts({
+        notifier: notifier.publicKey,
+        lp: global.lp,
+        proposal: global.proposal,
+      })
+      .signers([notifier])
+      .rpc(rpcConfig);
+  });
+  it("Accept insurance proposal", async () => {
+    await program.methods
+      .acceptReinsuranceProposal()
+      .accounts({
+        insuranceCreator: global.insuranceCreator.publicKey,
+        insurance: global.insurance,
+        lp: global.lp,
+        proposal: global.proposal,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.insuranceCreator])
+      .rpc(rpcConfig);
+  });
+  it("Pay premium on insurance", async () => {
+    const premiumVault = await get_pda_from_seeds([
+      Buffer.from("premium"),
+      global.insurance.toBuffer(),
+      global.proposal.toBuffer(),
+    ]);
+    const premiumVaultTokenAccount = await getAssociatedTokenAddress(
+      global.mintAddress,
+      premiumVault,
+      true
+    );
+
+    const insuranceCreatorUsdcAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      global.insuranceCreator,
+      global.mintAddress,
+      global.insuranceCreator.publicKey
+    );
+
+    await transfer(
+      connection,
+      global.insuranceCreator,
+      global.securityAddrUSDCAccount.address,
+      insuranceCreatorUsdcAccount.address,
+      global.securityAddr,
+      securityAmount.toNumber()
+    );
+
+    await program.methods
+      .payPremium(premiumMultiplier)
+      .accounts({
+        insuranceCreator: global.insuranceCreator.publicKey,
+        insurance: global.insurance,
+        premiumVault: premiumVault,
+        premiumVaultTokenAccount: premiumVaultTokenAccount,
+        insuranceCreatorUsdcAccount: insuranceCreatorUsdcAccount.address,
+        proposal: global.proposal,
+        lp: global.lp,
+        usdcMint: global.mintAddress,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.insuranceCreator])
+      .rpc(rpcConfig);
+    global.premiumVault = premiumVault;
+  });
+  it("Raise claim", async () => {
+    const claim = await get_pda_from_seeds([
+      Buffer.from("claim"),
+      global.proposal.toBuffer(),
+      Buffer.from(claimId),
+    ]);
+    await program.methods
+      .raiseClaim(claimId, claimAmount, claimMetadataLink)
+      .accounts({
+        insuranceCreator: global.insuranceCreator.publicKey,
+        insurance: global.insurance,
+        lp: global.lp,
+        proposal: global.proposal,
+        claim: claim,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.insuranceCreator])
+      .rpc(rpcConfig);
+  });
+  it("Propose strategy", async () => {
+    const strategyProposer = await create_keypair();
+    const proposedStrategy = await get_pda_from_seeds([
+      Buffer.from("strategy"),
+      Buffer.from(strategyId),
+      global.premiumVault.toBuffer(),
+    ]);
+
+    await program.methods
+      .proposeStrategy(strategyId, streamPayment, streamEvery, numberOfStreams)
+      .accounts({
+        strategyProposer: strategyProposer.publicKey,
+        premiumVault: global.premiumVault,
+        strategyProgram: strategyProgram,
+        proposedStrategy: proposedStrategy,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([strategyProposer])
+      .rpc(rpcConfig);
+  });
+  it("Vote strategy", async () => {});
 });

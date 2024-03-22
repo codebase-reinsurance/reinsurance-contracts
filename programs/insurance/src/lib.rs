@@ -62,7 +62,7 @@ pub mod insurance {
     }
 
     pub fn propose_insurance_proposal(
-        ctx: Context<SendInsuranceProposal>,
+        ctx: Context<ProposeInsuranceProposal>,
         proposed_commision: u64,
         proposed_undercollaterization: u64,
         proposal_docs: String,
@@ -164,5 +164,9 @@ pub mod insurance {
 
     pub fn refund_proposal_vote(ctx: Context<RefundProposalVote>) -> Result<()> {
         refund_proposal_vote::handler(ctx)
+    }
+
+    pub fn accept_proposal(ctx: Context<AcceptInsuranceProposal>) -> Result<()> {
+        accept_proposal::handler(ctx)
     }
 }

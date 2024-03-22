@@ -10,7 +10,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-pub struct SendInsuranceProposal<'info> {
+pub struct ProposeInsuranceProposal<'info> {
     #[account(mut)]
     pub proposal_proposer: Signer<'info>,
     pub lp: Account<'info, LP>,
@@ -55,7 +55,7 @@ pub struct SendInsuranceProposal<'info> {
 }
 
 pub fn handler(
-    ctx: Context<SendInsuranceProposal>,
+    ctx: Context<ProposeInsuranceProposal>,
     proposed_commision: u64,
     proposed_undercollaterization: u64,
     proposal_docs: String,

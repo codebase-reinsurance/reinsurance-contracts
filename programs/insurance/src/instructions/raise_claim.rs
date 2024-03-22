@@ -20,6 +20,7 @@ pub struct RaiseClaim<'info> {
     )]
     pub insurance: Account<'info, Insurance>,
     #[account(
+        mut,
         seeds = [
             proposal.lp_owner.as_ref()
         ],
@@ -29,7 +30,7 @@ pub struct RaiseClaim<'info> {
     #[account(
         mut,
         seeds = [
-            proposal.lp_owner.as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref()
         ],
         bump=proposal.bump,

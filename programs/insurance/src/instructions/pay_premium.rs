@@ -1,7 +1,7 @@
 use crate::{
     constant::TWO_WEEKS,
     event::PremiumPayed,
-    state::{Insurance, PremiumVault, ReInsuranceProposal},
+    state::{Insurance, PremiumVault, ReInsuranceProposal, LP},
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -17,11 +17,11 @@ pub struct PayPremiun<'info> {
     pub insurance_creator: Signer<'info>,
     #[account(
         mut,
-        constraint = insurance_creator_token_account.mint==usdc_mint.key(),
-        constraint = insurance_creator_token_account.owner == insurance_creator.key(),
-        constraint = insurance_creator_token_account.amount >= premium_multiplier * insurance.premium
+        constraint = insurance_creator_usdc_account.mint==usdc_mint.key(),
+        constraint = insurance_creator_usdc_account.owner == insurance_creator.key(),
+        constraint = insurance_creator_usdc_account.amount >= premium_multiplier * insurance.premium
     )]
-    pub insurance_creator_token_account: Account<'info, TokenAccount>,
+    pub insurance_creator_usdc_account: Account<'info, TokenAccount>,
     #[account(
         seeds = [
             insurance_creator.key().as_ref(),
@@ -31,6 +31,13 @@ pub struct PayPremiun<'info> {
         constraint = insurance.reinsured == true
     )]
     pub insurance: Account<'info, Insurance>,
+    #[account(
+        seeds = [
+            proposal.lp_owner.as_ref()
+        ],
+        bump=lp.bump
+    )]
+    pub lp: Account<'info, LP>,
     #[account(
         init_if_needed,
         payer = insurance_creator,
@@ -52,7 +59,7 @@ pub struct PayPremiun<'info> {
     pub premium_vault_token_account: Account<'info, TokenAccount>,
     #[account(
         seeds = [
-            proposal.lp_owner.key().as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref()
         ],
         bump=proposal.bump,
@@ -73,7 +80,7 @@ pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> 
     let insurance = &mut ctx.accounts.insurance;
     let proposal = &ctx.accounts.proposal;
     let insurance_creator = &mut ctx.accounts.insurance_creator;
-    let insurance_creator_token_account = &mut ctx.accounts.insurance_creator_token_account;
+    let insurance_creator_usdc_account = &mut ctx.accounts.insurance_creator_usdc_account;
 
     premium_vault.bump = ctx.bumps.premium_vault;
     premium_vault.reinsurance = proposal.key();
@@ -85,7 +92,7 @@ pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> 
         CpiContext::new(
             token_program.to_account_info(),
             Transfer {
-                from: insurance_creator_token_account.to_account_info(),
+                from: insurance_creator_usdc_account.to_account_info(),
                 to: premium_vault_token_account.to_account_info(),
                 authority: insurance_creator.to_account_info(),
             },

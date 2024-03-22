@@ -9,7 +9,7 @@ strategy = "5xFECAW3QY9nwfFSHhLAatHKZxcLv1ZtrMJEMs18rFik"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/ubuntu/.config/solana/id.json"
 
 [scripts]

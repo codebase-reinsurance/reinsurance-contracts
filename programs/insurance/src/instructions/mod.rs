@@ -1,3 +1,4 @@
+pub mod accept_proposal;
 pub mod accept_reinsurance_proposal;
 pub mod accept_strategy;
 pub mod add_security;
@@ -20,6 +21,7 @@ pub mod vote_claim;
 pub mod vote_insurance_proposal;
 pub mod vote_strategy;
 
+pub use accept_proposal::*;
 pub use accept_reinsurance_proposal::*;
 pub use accept_strategy::*;
 pub use add_security::*;
