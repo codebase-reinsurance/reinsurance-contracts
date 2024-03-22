@@ -89,4 +89,8 @@ pub enum InsuranceEnumError {
     // 6021
     #[msg("Voting did not accept this insurance proposal")]
     VoteOnInsuranceProposalUnSuccessful,
+
+    // 6022
+    #[msg("Incorrect metadata account sent")]
+    IncorrectMetadataAccount,
 }

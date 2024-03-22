@@ -1,6 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Insurance } from "../target/types/insurance";
-import { create_keypair, get_pda_from_seeds } from "./helper";
+import {
+  create_keypair,
+  get_pda_from_seeds,
+  get_metadata_account,
+  calculate_expiry_time,
+} from "./helper";
 import {
   insurerDescription,
   insuranceId,
@@ -9,7 +14,6 @@ import {
   premium,
   deductible,
   insuranceMetadataLink,
-  expiry,
   proposedCommision,
   proposeduUndercollaterization,
   proposalMetadataLink,
@@ -17,6 +21,10 @@ import {
   securityAmount,
   TOKEN_METADATA_PROGRAM_ID,
   premiumMultiplier,
+  idealSize,
+  tokenName,
+  tokenimage,
+  tokenMetadata,
 } from "./constant";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -28,7 +36,6 @@ import {
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { rpcConfig } from "./test_config";
-import { BN } from "bn.js";
 
 describe("insurance", () => {
   // Configure the client to use the local cluster.
@@ -63,11 +70,31 @@ describe("insurance", () => {
   it("Creates a LP!", async () => {
     const lpCreator = await create_keypair();
     const lp = await get_pda_from_seeds([lpCreator.publicKey.toBuffer()]);
+    const tokenisedMint = await get_pda_from_seeds([
+      Buffer.from("i_am_in_love"),
+      Buffer.from("withacriminl"),
+      lp.toBuffer(),
+    ]);
+
+    const securityMint = await getAssociatedTokenAddress(
+      tokenisedMint,
+      lp,
+      true
+    );
+
+    const metadataAddress = await get_metadata_account(tokenisedMint);
+
     await program.methods
-      .registerLp()
+      .registerLp(idealSize, tokenName, tokenimage, tokenMetadata)
       .accounts({
         lpCreator: lpCreator.publicKey,
         lp: lp,
+        tokenisedMint: tokenisedMint,
+        securityMint: securityMint,
+        metadata: metadataAddress,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([lpCreator])
@@ -75,6 +102,8 @@ describe("insurance", () => {
 
     global.lpCreator = lpCreator;
     global.lp = lp;
+    global.tokenisedMint = tokenisedMint;
+    global.securityMint = securityMint;
   });
 
   it("Registers an insurance", async () => {
@@ -90,7 +119,7 @@ describe("insurance", () => {
         premium,
         minimumCommission,
         deductible,
-        expiry,
+        calculate_expiry_time(),
         insuranceMetadataLink
       )
       .accounts({
@@ -103,30 +132,40 @@ describe("insurance", () => {
       .rpc(rpcConfig);
     global.insurance = insurance;
   });
-  it("Sends an insurance proposal", async () => {
+  it("Proposes an insurance proposal", async () => {
     const proposal = await get_pda_from_seeds([
-      global.lpCreator.publicKey.toBuffer(),
+      global.lp.toBuffer(),
       global.insurance.toBuffer(),
     ]);
+    const proposalProposer = await create_keypair();
+    const proposalTokenAccount = await getAssociatedTokenAddress(
+      global.tokenisedMint,
+      proposal,
+      true
+    );
 
     await program.methods
-      .sendInsuranceProposal(
+      .proposeInsuranceProposal(
         proposedCommision,
         proposeduUndercollaterization,
         proposalMetadataLink
       )
       .accounts({
-        lpCreator: global.lpCreator.publicKey,
+        proposalProposer: proposalProposer.publicKey,
         lp: global.lp,
         insurance: global.insurance,
         proposal: proposal,
+        tokenisedMint: global.tokenisedMint,
+        proposalTokenAccount: proposalTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
       })
-      .signers([global.lpCreator])
+      .signers([proposalProposer])
       .rpc(rpcConfig);
     global.proposal = proposal;
   });
-  it("Creates and adds security using artificial token", async () => {
+  it("Add security", async () => {
     // note: This will not work on pushed contracts
     const mintAddress = await createMint(
       connection,
@@ -136,20 +175,21 @@ describe("insurance", () => {
       6
     );
 
-    const lpCreatorTokenAddress = await getOrCreateAssociatedTokenAccount(
+    const securityAddr = await create_keypair();
+    const securityAddrUSDCAccount = await getOrCreateAssociatedTokenAccount(
       connection,
-      global.lpCreator,
+      securityAddr,
       mintAddress,
-      global.lpCreator.publicKey
+      securityAddr.publicKey
     );
 
     await mintTo(
       connection,
-      global.lpCreator,
+      securityAddr,
       mintAddress,
-      lpCreatorTokenAddress.address,
+      securityAddrUSDCAccount.address,
       global.lpCreator,
-      mintAmount
+      securityAmount.toNumber()
     );
 
     const lpMintAccount = await getAssociatedTokenAddress(
@@ -158,108 +198,31 @@ describe("insurance", () => {
       true
     );
 
+    const securityAdrrTokenAccount = await getAssociatedTokenAddress(
+      global.tokenisedMint,
+      securityAddr.publicKey,
+      true
+    );
+
     await program.methods
       .addSecurity(securityAmount)
       .accounts({
-        lpCreator: global.lpCreator.publicKey,
+        securityAddr: securityAddr.publicKey,
+        securityAddrUsdcAcc: securityAddrUSDCAccount.address,
+        securityAdderTokenAddr: securityAdrrTokenAccount,
+        securityMint: global.securityMint,
         lp: global.lp,
-        lpCreatorUsdcAccount: lpCreatorTokenAddress.address,
+        tokenisedMint: global.tokenisedMint,
         lpUsdcAccount: lpMintAccount,
         usdcMint: mintAddress,
         systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
-      .signers([global.lpCreator])
+      .signers([securityAddr])
       .rpc(rpcConfig);
     global.mintAddress = mintAddress;
-    global.lpCreatorTokenAddress = lpCreatorTokenAddress;
-  });
-  it("Accept reinsurance proposal", async () => {
-    await program.methods
-      .acceptReinsuranceProposal()
-      .accounts({
-        insuranceCreator: global.insuranceCreator.publicKey,
-        insurance: global.insurance,
-        lp: global.lp,
-        proposal: global.proposal,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([global.insuranceCreator])
-      .rpc(rpcConfig);
-  });
-  it("Tokenise LP", async () => {
-    const tokenisedMint = await get_pda_from_seeds([
-      Buffer.from("i_am_in_love"),
-      Buffer.from("withacriminl"),
-      global.lp.toBuffer(),
-    ]);
-
-    const lpCreatorTokenisedAccount = await getAssociatedTokenAddress(
-      tokenisedMint,
-      global.lpCreator.publicKey
-    );
-
-    await program.methods
-      .tokeniseLp(null, null, null)
-      .accounts({
-        lpCreator: global.lpCreator.publicKey,
-        lp: global.lp,
-        tokenisedMint: tokenisedMint,
-        lpCreatorTokenisedAccount: lpCreatorTokenisedAccount,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([global.lpCreator])
-      .rpc(rpcConfig);
-  });
-  it("Pay premium", async () => {
-    const premiumVault = await get_pda_from_seeds([
-      Buffer.from("premium"),
-      global.insurance.toBuffer(),
-      global.proposal.toBuffer(),
-    ]);
-
-    const premiumVaultTokenAccount = await getAssociatedTokenAddress(
-      global.mintAddress,
-      premiumVault,
-      true
-    );
-
-    const insuranceCreatorTokenAccount =
-      await getOrCreateAssociatedTokenAccount(
-        connection,
-        global.insuranceCreator,
-        global.mintAddress,
-        global.insuranceCreator.publicKey
-      );
-
-    await transfer(
-      connection,
-      global.lpCreator,
-      global.lpCreatorTokenAddress.address,
-      insuranceCreatorTokenAccount.address,
-      global.lpCreator.publicKey,
-      1
-    );
-
-    await program.methods
-      .payPremium(premiumMultiplier)
-      .accounts({
-        insuranceCreator: global.insuranceCreator.publicKey,
-        insuranceCreatorTokenAccount: insuranceCreatorTokenAccount.address,
-        insurance: global.insurance,
-        premiumVault: premiumVault,
-        premiumVaultTokenAccount: premiumVaultTokenAccount,
-        proposal: global.proposal,
-        usdcMint: global.mintAddress,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .signers([global.insuranceCreator])
-      .rpc(rpcConfig);
+    global.securityAddr = securityAddr;
+    global.securityAddrUSDCAccount = securityAddrUSDCAccount;
   });
 });

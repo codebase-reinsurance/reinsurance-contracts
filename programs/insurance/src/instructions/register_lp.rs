@@ -1,4 +1,6 @@
 use crate::constant::DEFAULT_MINT_DECIMALS;
+use crate::error::InsuranceEnumError;
+use crate::helper::find_metadata_account;
 use crate::{event::LPCreated, state::LP};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -44,6 +46,9 @@ pub struct RegisterLP<'info> {
         associated_token::authority = lp,
     )]
     pub security_mint: Account<'info, TokenAccount>,
+    /// CHECK: We're about to create this with Metaplex
+    #[account(mut)]
+    pub metadata: UncheckedAccount<'info>,
     pub token_metadata_program: Program<'info, Metadata>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
@@ -58,14 +63,21 @@ pub fn handler(
     token_symbol: String,
     token_metadata_uri: String,
 ) -> Result<()> {
-    let lp_creator = &ctx.accounts.lp_creator;
+    let lp_creator = &mut ctx.accounts.lp_creator;
     let lp = &mut ctx.accounts.lp;
     let security_mint = &mut ctx.accounts.security_mint;
     let tokenised_mint = &mut ctx.accounts.tokenised_mint;
     let system_program = &ctx.accounts.system_program;
-    let metadata = &mut ctx.accounts.token_metadata_program;
+    let metadata = &mut ctx.accounts.metadata;
     let rent = &ctx.accounts.rent;
     let token_program = &ctx.accounts.token_program;
+
+    require!(
+        metadata
+            .key()
+            .eq(&(find_metadata_account(&tokenised_mint.key()).0)),
+        InsuranceEnumError::IncorrectMetadataAccount
+    );
 
     lp.bump = ctx.bumps.lp;
     lp.lp_creator = lp_creator.key();

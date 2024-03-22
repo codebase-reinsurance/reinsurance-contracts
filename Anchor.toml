@@ -2,14 +2,14 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-insurance = "8evVxMNMoHX2gdGVSLfHR4UwRUCdYC28erfpUAYaPiEn"
-strategy = "6T2GGYWJZAdNUSJMQ3xgcCUHPkiKNWoCQeym3HDtMxrw"
+insurance = "DajsLYULhHh3SVSDHsCCvnuHD8JeXgVf5mjfnQWpwzix"
+strategy = "5xFECAW3QY9nwfFSHhLAatHKZxcLv1ZtrMJEMs18rFik"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "/home/ubuntu/.config/solana/id.json"
 
 [scripts]

@@ -4,7 +4,7 @@ use anchor_spl::{
     mint::USDC,
     token::{Mint, Token, TokenAccount},
 };
-declare_id!("6T2GGYWJZAdNUSJMQ3xgcCUHPkiKNWoCQeym3HDtMxrw");
+declare_id!("5xFECAW3QY9nwfFSHhLAatHKZxcLv1ZtrMJEMs18rFik");
 
 #[program]
 pub mod strategy {

@@ -1,6 +1,7 @@
 import * as anchor from "@project-serum/anchor";
 import { Insurance } from "../target/types/insurance";
 import { TOKEN_METADATA_PROGRAM_ID } from "./constant";
+import { BN } from "@coral-xyz/anchor";
 
 // Configure the client to use the local cluster.
 anchor.setProvider(anchor.AnchorProvider.env());
@@ -41,5 +42,32 @@ async function get_metadata_account(mintKeypair) {
     TOKEN_METADATA_PROGRAM_ID
   )[0];
 }
+async function get_metadata_account(mintKeypair) {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("metadata"),
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mintKeypair.toBuffer(),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0];
+}
 
-export { create_keypair, get_pda_from_seeds };
+function calculate_expiry_time(
+  durationInSeconds = 60 * 24 * 60 * 60,
+  currentUnixTimestamp = Math.floor(Date.now() / 1000)
+) {
+  // Calculate the new expiry timestamp
+  const newExpiryTimestamp = currentUnixTimestamp + durationInSeconds;
+
+  // Convert the new expiry timestamp to BN (Big Number)
+  const expiry = new BN(newExpiryTimestamp);
+
+  return expiry;
+}
+export {
+  create_keypair,
+  get_pda_from_seeds,
+  get_metadata_account,
+  calculate_expiry_time,
+};

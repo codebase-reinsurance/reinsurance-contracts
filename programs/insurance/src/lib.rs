@@ -4,12 +4,13 @@ use instructions::*;
 pub mod constant;
 pub mod error;
 pub mod event;
+pub mod helper;
 pub mod instructions;
 pub mod state;
 pub mod strategy_program_interface;
 pub mod utils;
 
-declare_id!("8evVxMNMoHX2gdGVSLfHR4UwRUCdYC28erfpUAYaPiEn");
+declare_id!("DajsLYULhHh3SVSDHsCCvnuHD8JeXgVf5mjfnQWpwzix");
 
 #[program]
 pub mod insurance {
