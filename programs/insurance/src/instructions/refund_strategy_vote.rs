@@ -1,5 +1,5 @@
 use crate::{
-    constant::{DEFAULT_MINT_DECIMALS, WEEK},
+    constant::{DEFAULT_MINT_DECIMALS, TWO_WEEKS},
     error::InsuranceEnumError,
     event::StrategyVoteRefunded,
     state::{StrategyAccount, StrategyVoteAccount, LP},
@@ -67,7 +67,7 @@ pub fn handler(ctx: Context<RefundStrategyVote>) -> Result<()> {
     let current_time = Clock::get()?.unix_timestamp;
 
     require!(
-        current_time - proposed_strategy.voting_start.unwrap() > WEEK,
+        current_time - proposed_strategy.voting_start.unwrap() > TWO_WEEKS,
         InsuranceEnumError::RefundDeclined
     );
 

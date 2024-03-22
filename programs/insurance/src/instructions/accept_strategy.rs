@@ -39,7 +39,7 @@ pub struct AcceptStrategy<'info> {
     pub insurance: Account<'info, Insurance>,
     #[account(
         seeds = [
-            lp.lp_creator.as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref()
         ],
         bump=proposal.bump,
@@ -70,10 +70,10 @@ pub struct AcceptStrategy<'info> {
 
 pub fn handler(ctx: Context<AcceptStrategy>) -> Result<()> {
     let proposed_strategy = &mut ctx.accounts.proposed_strategy;
-    let tokenised_mint = &ctx.accounts.tokenised_mint;
+    let lp = &ctx.accounts.lp;
 
     require!(
-        tokenised_mint.supply <= proposed_strategy.vote * 2,
+        lp.total_assets <= proposed_strategy.vote * 2,
         InsuranceEnumError::NotEnoughVotes
     );
 

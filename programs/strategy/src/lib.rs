@@ -18,15 +18,15 @@ pub mod strategy {
 #[derive(Accounts)]
 pub struct ExecuteStrategyCPI<'info> {
     pub strategy_executor: Signer<'info>,
+    /// CHECK: account in which premium is stored in
     #[account(mut)]
-    pub premium_vault: Account<'info, TokenAccount>,
+    pub premium_vault: AccountInfo<'info>,
     #[account(
         mut,
         associated_token::mint = usdc_mint,
-        associated_token::authority = premium_vault
+        associated_token::authority = premium_vault,
     )]
     pub premium_vault_token_account: Account<'info, TokenAccount>,
-    #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     ///CHECK: account on which strategy money is deposited
     pub executor_account: AccountInfo<'info>,

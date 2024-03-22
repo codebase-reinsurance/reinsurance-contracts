@@ -1,7 +1,7 @@
 use crate::{
     error::InsuranceEnumError,
     event::StrategyExecuted,
-    state::{Insurance, PremiumVault, ReInsuranceProposal, StrategyAccount},
+    state::{Insurance, PremiumVault, ReInsuranceProposal, StrategyAccount, LP},
     strategy_program_interface::StrategyInterface,
 };
 use anchor_lang::prelude::*;
@@ -13,12 +13,19 @@ use anchor_spl::{
 use strategy::cpi::accounts::ExecuteStrategyCPI;
 
 #[derive(Accounts)]
-#[instruction(stream_amount: u64)]
 pub struct ExecuteStrategy<'info> {
     pub executor: Signer<'info>,
     #[account(
+        mut,
         seeds = [
             proposal.lp_owner.as_ref(),
+        ],
+        bump=lp.bump
+    )]
+    pub lp: Account<'info, LP>,
+    #[account(
+        seeds = [
+            lp.key().as_ref(),
             proposal.insurance.as_ref()
         ],
         bump=proposal.bump,
@@ -44,7 +51,7 @@ pub struct ExecuteStrategy<'info> {
         mut,
         associated_token::mint = usdc_mint,
         associated_token::authority = premium_vault,
-        constraint = premium_vault_token_account.amount >= stream_amount
+        constraint = premium_vault_token_account.amount >= proposed_strategy.stream_amount
     )]
     pub premium_vault_token_account: Account<'info, TokenAccount>,
     #[account(
@@ -64,7 +71,7 @@ pub struct ExecuteStrategy<'info> {
     pub strategy_program: Interface<'info, StrategyInterface>,
     ///CHECK: account on which strategy money is deposited
     pub executor_account: AccountInfo<'info>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,

@@ -357,6 +357,7 @@ describe("insurance", () => {
       .signers([global.insuranceCreator])
       .rpc(rpcConfig);
     global.premiumVault = premiumVault;
+    global.premiumVaultTokenAccount = premiumVaultTokenAccount;
   });
   it("Raise claim", async () => {
     const claim = await get_pda_from_seeds([
@@ -396,6 +397,83 @@ describe("insurance", () => {
       })
       .signers([strategyProposer])
       .rpc(rpcConfig);
+    global.proposedStrategy = proposedStrategy;
   });
-  it("Vote strategy", async () => {});
+  it("Vote strategy", async () => {
+    const voteAccount = await get_pda_from_seeds([
+      global.proposedStrategy.toBuffer(),
+      global.securityAddr.publicKey.toBuffer()
+    ]);
+    const voteTokenAccount = await getAssociatedTokenAddress(
+      global.tokenisedMint,
+      voteAccount,
+      true
+    ) ;
+
+    await program.methods.voteStrategy(securityAmount).accounts({
+      lpTokenOwner: global.securityAddr.publicKey,
+      lpTokenOwnerAccount: global.securityAdrrTokenAccount,
+      lp: global.lp,
+      tokenisedMint: global.tokenisedMint,
+      insurance: global.insurance,
+      proposal: global.proposal,
+      premiumVault: global.premiumVault,
+      proposedStrategy: global.proposedStrategy,
+      proposedStrategyVoteAccount: voteAccount,
+      voteTokenAccount: voteTokenAccount,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      systemProgram: web3.SystemProgram.programId
+    }).signers([global.securityAddr]).rpc(rpcConfig);
+    global.voteAccount = voteAccount;
+    global.voteTokenAccount = voteTokenAccount
+  });
+  it("Get refund on strategy vote", async() => {
+    await sleep(7);
+    await program.methods.refundStrategyVote().accounts({
+      lpTokenOwner: global.securityAddr.publicKey,
+      lp: global.lp,
+      lpTokenOwnerAccount: global.securityAdrrTokenAccount,
+      tokenisedMint: global.tokenisedMint,
+      proposedStrategy: global.proposedStrategy,
+      proposedStrategyVoteAccount: global.voteAccount,
+      voteTokenAccount: global.voteTokenAccount,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: web3.SystemProgram.programId
+    }).signers([global.securityAddr]).rpc(rpcConfig);
+  })
+  it("Accept strategy", async()=>{
+    const strategyAcceptor = await create_keypair();
+    await program.methods.acceptStrategy().accounts({
+      strategyAccepter: strategyAcceptor.publicKey,
+      lp: global.lp,
+      tokenisedMint: global.tokenisedMint,
+      insurance: global.insurance,
+      proposal: global.proposal,
+      premiumVault: global.premiumVault,
+      proposedStrategy: global.proposedStrategy,
+      systemProgram: web3.SystemProgram.programId
+    }).signers([strategyAcceptor]).rpc(rpcConfig);
+  })
+  it("Execute strategy", async() => {
+    const executor = await create_keypair();
+    const executorAccount = await create_keypair();
+
+    await program.methods.executeStrategy().accounts({
+      executor: executor.publicKey,
+      proposal: global.proposal,
+      lp: global.lp,
+      insurance: global.insurance,
+      premiumVault: global.premiumVault,
+      premiumVaultTokenAccount: global.premiumVaultTokenAccount,
+      proposedStrategy: global.proposedStrategy,
+      strategyProgram: strategyProgram,
+      executorAccount: executorAccount.publicKey,
+      usdcMint: global.mintAddress,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: web3.SystemProgram.programId
+    }).signers([executor]).rpc(rpcConfig)
+  })
 });

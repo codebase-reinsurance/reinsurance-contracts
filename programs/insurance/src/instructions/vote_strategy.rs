@@ -1,5 +1,5 @@
 use crate::{
-    constant::{DEFAULT_MINT_DECIMALS, WEEK},
+    constant::{DEFAULT_MINT_DECIMALS, TWO_WEEKS},
     error::InsuranceEnumError,
     event::StrategyVoted,
     state::{
@@ -52,13 +52,13 @@ pub struct VoteStrategy<'info> {
     pub lp_token_owner_account: Account<'info, TokenAccount>,
     #[account(
         seeds = [
-            lp.lp_creator.as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref()
         ],
         bump=proposal.bump,
         constraint = proposal.proposal_accepted == true
     )]
-    pub proposal: Account<'info, ReInsuranceProposal>,
+    pub proposal: Box<Account<'info, ReInsuranceProposal>>,
     #[account(
         seeds = [
             b"premium",
@@ -116,7 +116,7 @@ pub fn handler(ctx: Context<VoteStrategy>, vote_amount: u64) -> Result<()> {
         }
         Some(voting_start) => {
             require!(
-                current_time - voting_start <= WEEK,
+                current_time - voting_start <= TWO_WEEKS,
                 InsuranceEnumError::VotingOnStrategyClosed
             );
         }
