@@ -67,11 +67,6 @@ pub struct ReInsuranceClaimed {
 }
 
 #[event]
-pub struct LPTokenised {
-    pub lp: Pubkey,
-}
-
-#[event]
 pub struct StrategyProposed {
     pub strategy: Pubkey,
     pub stream_amount: u64,
