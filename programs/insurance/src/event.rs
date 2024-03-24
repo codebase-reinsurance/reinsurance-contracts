@@ -25,6 +25,7 @@ pub struct LPCreated {
     pub token_metadata_uri: String,
     pub token_symbol: String,
     pub ideal_size: u64,
+    pub pool_lifecycle: i64,
 }
 
 #[event]
@@ -161,4 +162,17 @@ pub struct ProposalVoteRefunded {
 #[event]
 pub struct ProposalSent {
     pub proposal: Pubkey,
+}
+
+#[event]
+pub struct SecurityRefunded {
+    pub lp: Pubkey,
+    pub refund_amount: u64,
+    pub security_refund_amount: u64,
+}
+
+#[event]
+pub struct SecurityTransferred {
+    pub premium_vault: Pubkey,
+    pub lp_usdc_account: Pubkey,
 }

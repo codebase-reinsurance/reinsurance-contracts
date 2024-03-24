@@ -93,4 +93,24 @@ pub enum InsuranceEnumError {
     // 6022
     #[msg("Incorrect metadata account sent")]
     IncorrectMetadataAccount,
+
+    // 6023
+    #[msg("Can not reinsure insurance beyond pool lifecycle")]
+    PoolLifecycleExceeded,
+
+    // 6024
+    #[msg("Can not have lifecycle end in past")]
+    LifeCycleCanNotEndInPast,
+
+    // 6025
+    #[msg("Pool not closed yet")]
+    CanNotRefundBeforePoolClose,
+
+    // 6026
+    #[msg("Security refund calc incorrect")]
+    SecurityRefundAmountEnteredIncorrect,
+
+    // 6027
+    #[msg("Can not transfer before lp close")]
+    CanNotTransferToSecurityVaultBeforeLPClose,
 }

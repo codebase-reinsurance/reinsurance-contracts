@@ -40,6 +40,7 @@ pub struct LP {
     #[max_len(20)]
     pub undercollaterization_promised: Vec<u64>,
     pub ideal_size: u64,
+    pub pool_lifecycle: i64,
 }
 
 #[account]

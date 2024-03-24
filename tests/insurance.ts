@@ -34,6 +34,7 @@ import {
   claimId,
   claimAmount,
   claimMetadataLink,
+  poolLifecycle
 } from "./constant";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -94,7 +95,7 @@ describe("insurance", () => {
     const metadataAddress = await get_metadata_account(tokenisedMint);
 
     await program.methods
-      .registerLp(idealSize, tokenName, tokenimage, tokenMetadata)
+      .registerLp(idealSize, poolLifecycle, tokenName, tokenimage, tokenMetadata)
       .accounts({
         lpCreator: lpCreator.publicKey,
         lp: lp,

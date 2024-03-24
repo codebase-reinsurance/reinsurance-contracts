@@ -71,6 +71,10 @@ pub fn handler(
         InsuranceEnumError::InsuranceExpired
     );
     require!(
+        insurance.expiry <= lp.pool_lifecycle,
+        InsuranceEnumError::PoolLifecycleExceeded
+    );
+    require!(
         !insurance.reinsured,
         InsuranceEnumError::InsuranceReinsuredAlready
     );

@@ -26,6 +26,7 @@ pub mod insurance {
     pub fn register_lp(
         ctx: Context<RegisterLP>,
         ideal_size: u64,
+        pool_lifecycle: i64,
         token_name: String,
         token_symbol: String,
         token_metadata_uri: String,
@@ -33,6 +34,7 @@ pub mod insurance {
         register_lp::handler(
             ctx,
             ideal_size,
+            pool_lifecycle,
             token_name,
             token_symbol,
             token_metadata_uri,
@@ -168,5 +170,17 @@ pub mod insurance {
 
     pub fn accept_proposal(ctx: Context<AcceptInsuranceProposal>) -> Result<()> {
         accept_proposal::handler(ctx)
+    }
+
+    pub fn refund_security(
+        ctx: Context<RefundSecurity>,
+        refund_amount: u64,
+        security_refund_amount: u64,
+    ) -> Result<()> {
+        refund_security::handler(ctx, refund_amount, security_refund_amount)
+    }
+
+    pub fn transfer_to_security(ctx: Context<TransferToSecurity>) -> Result<()>{
+        transfer_to_security::handler(ctx)
     }
 }

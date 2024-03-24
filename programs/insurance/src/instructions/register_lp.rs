@@ -59,18 +59,21 @@ pub struct RegisterLP<'info> {
 pub fn handler(
     ctx: Context<RegisterLP>,
     ideal_size: u64,
+    pool_lifecycle: i64,
     token_name: String,
     token_symbol: String,
     token_metadata_uri: String,
 ) -> Result<()> {
     let lp_creator = &mut ctx.accounts.lp_creator;
     let lp = &mut ctx.accounts.lp;
+    let current_time = Clock::get()?.unix_timestamp;
     let security_mint = &mut ctx.accounts.security_mint;
     let tokenised_mint = &mut ctx.accounts.tokenised_mint;
     let system_program = &ctx.accounts.system_program;
     let metadata = &mut ctx.accounts.metadata;
     let rent = &ctx.accounts.rent;
     let token_program = &ctx.accounts.token_program;
+    let lifecycle = current_time + pool_lifecycle;
 
     require!(
         metadata
@@ -78,6 +81,7 @@ pub fn handler(
             .eq(&(find_metadata_account(&tokenised_mint.key()).0)),
         InsuranceEnumError::IncorrectMetadataAccount
     );
+    require!(lifecycle > 0, InsuranceEnumError::LifeCycleCanNotEndInPast);
 
     lp.bump = ctx.bumps.lp;
     lp.lp_creator = lp_creator.key();
@@ -87,6 +91,7 @@ pub fn handler(
     lp.total_assets = 0;
     lp.max_undercollaterization_promised = 0;
     lp.ideal_size = ideal_size;
+    lp.pool_lifecycle = lifecycle;
 
     let binding = lp.key();
     let signer_seeds: &[&[&[u8]]] = &[&[
@@ -141,7 +146,8 @@ pub fn handler(
         token_name: token_name,
         token_metadata_uri: token_metadata_uri,
         token_symbol: token_symbol,
-        ideal_size: ideal_size
+        ideal_size: ideal_size,
+        pool_lifecycle: lifecycle
     });
 
     Ok(())

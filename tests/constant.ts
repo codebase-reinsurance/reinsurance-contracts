@@ -36,6 +36,7 @@ const claimId: string = "1";
 const claimAmount: BN = new BN(1);
 const claimMetadataLink: string =
   "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
+const poolLifecycle = new BN(10368000);
 
 export {
   insurerDescription,
@@ -64,4 +65,5 @@ export {
   claimId,
   claimAmount,
   claimMetadataLink,
+  poolLifecycle
 };
