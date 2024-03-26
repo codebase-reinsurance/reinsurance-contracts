@@ -1,0 +1,3 @@
+# Insurers
+
+Insurers are insurance companies in need of reinsurance/tech companies in need of primary codebase insurance that must register themselves over the network to participate in the contract. To register, an insurer needs a Solana wallet and an IPFS link representing their verifying documents that must be sent with the request to register. The request is instantly approved over the contract irrespective of verifying documents, they merely serve as an extra layer that allows LP to decide if they wish to try to reinsure the insurers and sets a level of credibility for the insurer depending on documents uploaded, all of which will be publically searchable and traceable back to the insurer account.
