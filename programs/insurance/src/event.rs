@@ -40,15 +40,6 @@ pub struct LPAssetAdded {
 }
 
 #[event]
-pub struct ReInsuranceProposed {
-    pub lp_owner: Pubkey,
-    pub proposed_commision: u64,
-    pub proposed_undercollaterization: u64,
-    pub insurance: Pubkey,
-    pub proposal_docs: String,
-}
-
-#[event]
 pub struct ReInsuranceProposalAccepted {
     pub reinsurance: Pubkey,
 }
@@ -80,11 +71,6 @@ pub struct PremiumPayed {
 pub struct ReInsuranceClaimed {
     pub reinsurance: Pubkey,
     pub claim_amount: u64,
-}
-
-#[event]
-pub struct LPTokenised {
-    pub lp: Pubkey,
 }
 
 #[event]
