@@ -113,7 +113,8 @@ pub fn handler(ctx: Context<VoteInsuranceProposal>, transfer_amount: u64) -> Res
     emit!(InsuranceProposalVoted {
         voter: voter.key(),
         proposal: proposal.key(),
-        transfer_amount: transfer_amount
+        transfer_amount: transfer_amount,
+        vote_proposal_account: vote_proposal_account.key()
     });
 
     Ok(())

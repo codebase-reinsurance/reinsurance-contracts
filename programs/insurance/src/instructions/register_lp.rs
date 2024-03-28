@@ -147,7 +147,8 @@ pub fn handler(
         token_metadata_uri: token_metadata_uri,
         token_symbol: token_symbol,
         ideal_size: ideal_size,
-        pool_lifecycle: lifecycle
+        pool_lifecycle: lifecycle,
+        lp: lp.key()
     });
 
     Ok(())

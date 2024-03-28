@@ -180,7 +180,7 @@ pub mod insurance {
         refund_security::handler(ctx, refund_amount, security_refund_amount)
     }
 
-    pub fn transfer_to_security(ctx: Context<TransferToSecurity>) -> Result<()>{
+    pub fn transfer_to_security(ctx: Context<TransferToSecurity>) -> Result<()> {
         transfer_to_security::handler(ctx)
     }
 }

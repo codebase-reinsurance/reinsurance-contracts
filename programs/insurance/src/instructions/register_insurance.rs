@@ -76,6 +76,7 @@ pub fn handler(
         deductible: deductible,
         expiry: expiry,
         metadata_link: metadata_link,
+        insurance: insurance.key()
     });
 
     Ok(())

@@ -57,7 +57,8 @@ pub fn handler(
         stream_every: stream_every,
         number_of_streams: number_of_streams,
         premium_vault: premium_vault.key(),
-        strategy_id: strategy_id
+        strategy_id: strategy_id,
+        strategy_program: strategy_program.key()
     });
 
     Ok(())

@@ -4,6 +4,7 @@ use anchor_lang::prelude::*;
 pub struct InsurerRegistered {
     pub insurance_creator: Pubkey,
     pub verifying_documents: String,
+    pub insurer: Pubkey,
 }
 
 #[event]
@@ -16,6 +17,7 @@ pub struct InsuranceCreated {
     pub deductible: u64,
     pub expiry: i64,
     pub metadata_link: String,
+    pub insurance: Pubkey,
 }
 
 #[event]
@@ -26,12 +28,15 @@ pub struct LPCreated {
     pub token_symbol: String,
     pub ideal_size: u64,
     pub pool_lifecycle: i64,
+    pub lp: Pubkey,
 }
 
 #[event]
 pub struct LPAssetAdded {
     pub lp: Pubkey,
     pub asset_amount: u64,
+    pub security_mint: Pubkey,
+    pub security_addr: Pubkey,
 }
 
 #[event]
@@ -56,6 +61,7 @@ pub struct ReInsuranceProposalProposed {
     pub proposed_undercollaterization: u64,
     pub insurance: Pubkey,
     pub proposal_docs: String,
+    pub proposal: Pubkey,
 }
 
 #[event]
@@ -67,6 +73,7 @@ pub struct ReInsuranceCalledOff {
 pub struct PremiumPayed {
     pub reinsurance: Pubkey,
     pub prepayment_time: i64,
+    pub premium_vault: Pubkey,
 }
 
 #[event]
@@ -88,6 +95,7 @@ pub struct StrategyProposed {
     pub number_of_streams: u64,
     pub premium_vault: Pubkey,
     pub strategy_id: String,
+    pub strategy_program: Pubkey,
 }
 
 #[event]
@@ -95,6 +103,7 @@ pub struct StrategyVoted {
     pub strategy: Pubkey,
     pub voter: Pubkey,
     pub vote_amount: u64,
+    pub proposed_strategy_vote_account: Pubkey,
 }
 
 #[event]
@@ -122,6 +131,7 @@ pub struct ClaimVoted {
     pub claim: Pubkey,
     pub voter: Pubkey,
     pub vote_amount: u64,
+    pub claim_vote_account: Pubkey,
 }
 
 #[event]
@@ -151,6 +161,7 @@ pub struct InsuranceProposalVoted {
     pub voter: Pubkey,
     pub proposal: Pubkey,
     pub transfer_amount: u64,
+    pub vote_proposal_account: Pubkey,
 }
 
 #[event]

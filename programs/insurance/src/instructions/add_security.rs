@@ -105,7 +105,9 @@ pub fn handler(ctx: Context<AddSecurity>, transfer_amount: u64) -> Result<()> {
 
     emit!(LPAssetAdded {
         lp: lp.key(),
-        asset_amount: transfer_amount
+        asset_amount: transfer_amount,
+        security_addr: security_addr.key(),
+        security_mint: security_mint.key()
     });
 
     Ok(())

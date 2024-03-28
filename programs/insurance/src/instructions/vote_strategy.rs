@@ -142,6 +142,7 @@ pub fn handler(ctx: Context<VoteStrategy>, vote_amount: u64) -> Result<()> {
         strategy: proposed_strategy.key(),
         voter: lp_token_owner.key(),
         vote_amount: vote_amount,
+        proposed_strategy_vote_account: proposed_strategy_vote_account.key()
     });
 
     Ok(())

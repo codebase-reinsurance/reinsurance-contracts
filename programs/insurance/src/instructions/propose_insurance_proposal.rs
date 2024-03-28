@@ -96,7 +96,8 @@ pub fn handler(
         proposed_commision: proposed_commision,
         proposed_undercollaterization: proposed_undercollaterization,
         insurance: insurance.key(),
-        proposal_docs: proposal_docs
+        proposal_docs: proposal_docs,
+        proposal: proposal.key()
     });
 
     Ok(())

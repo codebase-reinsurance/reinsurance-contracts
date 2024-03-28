@@ -29,6 +29,7 @@ pub fn handler(ctx: Context<RegisterInsurer>, verifying_documents: String) -> Re
     emit!(InsurerRegistered {
         insurance_creator: insurance_creator.key(),
         verifying_documents: verifying_documents,
+        insurer: insurer.key()
     });
 
     Ok(())

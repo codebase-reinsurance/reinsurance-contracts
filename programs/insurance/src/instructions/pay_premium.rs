@@ -105,7 +105,8 @@ pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> 
 
     emit!(PremiumPayed {
         reinsurance: proposal.key(),
-        prepayment_time: insurance.premium_due.unwrap()
+        prepayment_time: insurance.premium_due.unwrap(),
+        premium_vault: premium_vault.key()
     });
 
     Ok(())
