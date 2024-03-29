@@ -103,7 +103,7 @@ pub fn handler(ctx: Context<ReleaseSecurity>) -> Result<()> {
 
     emit!(ReInsuranceClaimed {
         reinsurance: proposal.key(),
-        claim_amount: transfer_amount
+        claim: claim.key()
     });
 
     Ok(())

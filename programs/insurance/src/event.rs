@@ -70,7 +70,7 @@ pub struct PremiumPayed {
 #[event]
 pub struct ReInsuranceClaimed {
     pub reinsurance: Pubkey,
-    pub claim_amount: u64,
+    pub claim: Pubkey,
 }
 
 #[event]
