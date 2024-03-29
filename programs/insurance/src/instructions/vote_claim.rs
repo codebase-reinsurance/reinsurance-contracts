@@ -90,7 +90,8 @@ pub fn handler(ctx: Context<VoteClaim>, vote_amount: u64, vote_direction: bool) 
         claim: claim.key(),
         voter: voter.key(),
         vote_amount: vote_amount,
-        claim_vote_account: claim_vote_account.key()
+        claim_vote_account: claim_vote_account.key(),
+        vote_direction: vote_direction
     });
 
     Ok(())

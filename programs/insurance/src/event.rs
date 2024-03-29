@@ -119,6 +119,7 @@ pub struct ClaimVoted {
     pub voter: Pubkey,
     pub vote_amount: u64,
     pub claim_vote_account: Pubkey,
+    pub vote_direction: bool,
 }
 
 #[event]
