@@ -64,7 +64,7 @@ pub fn handler(
 
     claim.bump = ctx.bumps.claim;
     claim.reinsurance = proposal.key();
-    claim.claim_id = claim_id;
+    claim.claim_id = claim_id.clone();
     claim.claim_amount = claim_amount;
     claim.claim_metadata_link = claim_metadata_link.clone();
     claim.claim_voting_start = current_time;
@@ -77,7 +77,8 @@ pub fn handler(
         reinsurance: proposal.key(),
         claim: claim.key(),
         claim_amount: claim_amount,
-        claim_metadata_link: claim_metadata_link
+        claim_metadata_link: claim_metadata_link,
+        claim_id: claim_id
     });
 
     Ok(())

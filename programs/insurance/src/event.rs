@@ -110,6 +110,7 @@ pub struct ClaimRaised {
     pub claim: Pubkey,
     pub claim_amount: u64,
     pub claim_metadata_link: String,
+    pub claim_id: String,
 }
 
 #[event]
