@@ -33,7 +33,8 @@ pub struct PayPremiun<'info> {
     pub insurance: Account<'info, Insurance>,
     #[account(
         seeds = [
-            proposal.lp_owner.as_ref()
+            proposal.lp_owner.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]

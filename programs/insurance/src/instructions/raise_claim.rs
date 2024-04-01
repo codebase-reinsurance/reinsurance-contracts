@@ -22,7 +22,8 @@ pub struct RaiseClaim<'info> {
     #[account(
         mut,
         seeds = [
-            proposal.lp_owner.as_ref()
+            proposal.lp_owner.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]

@@ -15,7 +15,8 @@ pub struct RefundSecurity<'info> {
     #[account(
         mut,
         seeds = [
-            lp.lp_creator.as_ref()
+            lp.lp_creator.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]
@@ -99,7 +100,7 @@ pub fn handler(
         refund_amount,
     )?;
 
-    let signer_seeds: &[&[&[u8]]] = &[&[lp.lp_creator.as_ref(), &[lp.bump]]];
+    let signer_seeds: &[&[&[u8]]] = &[&[lp.lp_creator.as_ref(), b"LP", &[lp.bump]]];
 
     transfer(
         CpiContext::new_with_signer(

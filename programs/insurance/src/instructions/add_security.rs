@@ -14,7 +14,8 @@ pub struct AddSecurity<'info> {
     #[account(
         mut,
         seeds = [
-            lp.lp_creator.as_ref()
+            lp.lp_creator.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]
@@ -74,7 +75,7 @@ pub fn handler(ctx: Context<AddSecurity>, transfer_amount: u64) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let security_mint = &mut ctx.accounts.security_mint;
 
-    let signer_seeds: &[&[&[u8]]] = &[&[lp.lp_creator.as_ref(), &[lp.bump]]];
+    let signer_seeds: &[&[&[u8]]] = &[&[lp.lp_creator.as_ref(), b"LP", &[lp.bump]]];
 
     transfer(
         CpiContext::new(

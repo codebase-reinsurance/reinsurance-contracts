@@ -21,7 +21,8 @@ pub struct RegisterLP<'info> {
         payer=lp_creator,
         space=8+LP::INIT_SPACE,
         seeds = [
-            lp_creator.key().as_ref()
+            lp_creator.key().as_ref(),
+            b"LP"
         ],
         bump
     )]

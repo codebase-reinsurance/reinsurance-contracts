@@ -19,6 +19,7 @@ pub struct ExecuteStrategy<'info> {
         mut,
         seeds = [
             proposal.lp_owner.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]

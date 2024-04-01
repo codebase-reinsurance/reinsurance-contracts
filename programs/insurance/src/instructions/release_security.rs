@@ -23,7 +23,8 @@ pub struct ReleaseSecurity<'info> {
     #[account(
         mut,
         seeds = [
-            lp_creator.key().as_ref()
+            lp_creator.key().as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]
@@ -83,7 +84,7 @@ pub fn handler(ctx: Context<ReleaseSecurity>) -> Result<()> {
     let transfer_amount = claim.claim_amount;
 
     let binding = lp_creator.key();
-    let lp_signer_seeds: &[&[&[u8]]] = &[&[binding.as_ref(), &[lp.bump]]];
+    let lp_signer_seeds: &[&[&[u8]]] = &[&[binding.as_ref(), b"LP", &[lp.bump]]];
 
     transfer(
         CpiContext::new_with_signer(

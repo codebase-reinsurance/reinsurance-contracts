@@ -25,7 +25,8 @@ pub struct VoteInsuranceProposal<'info> {
     pub voter_token_account: Account<'info, TokenAccount>,
     #[account(
         seeds = [
-            lp.lp_creator.as_ref()
+            lp.lp_creator.as_ref(),
+            b"LP"
         ],
         bump=lp.bump
     )]
