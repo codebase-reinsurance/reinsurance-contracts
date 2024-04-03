@@ -31,5 +31,5 @@ pub fn handler(ctx: Context<ClaimDecision>) -> Result<bool> {
         decision: claim.accepted.unwrap()
     });
 
-    Ok((claim.accepted.unwrap()))
+    Ok(claim.accepted.unwrap())
 }

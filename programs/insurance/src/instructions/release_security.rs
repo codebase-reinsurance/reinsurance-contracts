@@ -47,7 +47,8 @@ pub struct ReleaseSecurity<'info> {
     #[account(
         seeds = [
             lp_creator.key().as_ref(),
-            insurance.key().as_ref()
+            insurance.key().as_ref(),
+            proposal.proposal_id.as_bytes()
         ],
         bump=proposal.bump,
         constraint = proposal.proposal_accepted == true

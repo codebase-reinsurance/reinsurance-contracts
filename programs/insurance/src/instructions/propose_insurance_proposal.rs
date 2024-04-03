@@ -10,6 +10,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
+#[instruction(proposal_id: String)]
 pub struct ProposeInsuranceProposal<'info> {
     #[account(mut)]
     pub proposal_proposer: Signer<'info>,
@@ -28,7 +29,8 @@ pub struct ProposeInsuranceProposal<'info> {
         space = 8 + ReInsuranceProposal::INIT_SPACE,
         seeds = [
             lp.key().as_ref(),
-            insurance.key().as_ref()
+            insurance.key().as_ref(),
+            proposal_id.as_bytes()
         ],
         bump
     )]
@@ -56,9 +58,10 @@ pub struct ProposeInsuranceProposal<'info> {
 
 pub fn handler(
     ctx: Context<ProposeInsuranceProposal>,
+    proposal_id: String,
+    proposal_docs: String,
     proposed_commision: u64,
     proposed_undercollaterization: u64,
-    proposal_docs: String,
 ) -> Result<()> {
     let proposal = &mut ctx.accounts.proposal;
     let lp = &ctx.accounts.lp;
@@ -89,6 +92,7 @@ pub fn handler(
     proposal.proposal_sent = false;
     proposal.proposal_vote = 0;
     proposal.proposal_vote_start = current_time;
+    proposal.proposal_id = proposal_id.clone();
 
     emit!(ReInsuranceProposalProposed {
         lp: lp.key(),
@@ -97,7 +101,8 @@ pub fn handler(
         proposed_undercollaterization: proposed_undercollaterization,
         insurance: insurance.key(),
         proposal_docs: proposal_docs,
-        proposal: proposal.key()
+        proposal: proposal.key(),
+        proposal_id: proposal_id
     });
 
     Ok(())

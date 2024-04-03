@@ -51,8 +51,10 @@ pub struct ReInsuranceProposal {
     pub proposed_commision: u64,
     pub proposed_undercollaterization: u64,
     pub insurance: Pubkey,
-    #[max_len(100)]
+    #[max_len(64)]
     pub proposal_docs: String,
+    #[max_len(32)]
+    pub proposal_id: String,
     pub proposal_accepted: bool,
     pub proposal_sent: bool,
     pub proposal_vote: u64,

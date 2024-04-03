@@ -33,6 +33,7 @@ const strategyProgram: PublicKey = new PublicKey(
   "5xFECAW3QY9nwfFSHhLAatHKZxcLv1ZtrMJEMs18rFik"
 );
 const claimId: string = "1";
+const proposalId: string = "1";
 const claimAmount: BN = new BN(1);
 const claimMetadataLink: string =
   "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
@@ -66,4 +67,5 @@ export {
   claimAmount,
   claimMetadataLink,
   poolLifecycle,
+  proposalId
 };

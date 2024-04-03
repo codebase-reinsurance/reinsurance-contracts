@@ -64,7 +64,8 @@ pub struct RefundProposalVote<'info> {
     #[account(
         seeds = [
             lp.key().as_ref(),
-            insurance.key().as_ref()
+            insurance.key().as_ref(),
+            proposal.proposal_id.as_bytes()
         ],
         bump=proposal.bump
     )]

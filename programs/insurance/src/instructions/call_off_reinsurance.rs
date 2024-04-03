@@ -33,7 +33,8 @@ pub struct CallOffReinsurance<'info> {
         mut,
         seeds = [
             proposal.lp_owner.as_ref(),
-            proposal.insurance.as_ref()
+            proposal.insurance.as_ref(),
+            proposal.proposal_id.as_bytes()
         ],
         bump=proposal.bump,
         constraint = proposal.proposal_accepted == true

@@ -32,6 +32,7 @@ import {
   numberOfStreams,
   strategyProgram,
   claimId,
+  proposalId,
   claimAmount,
   claimMetadataLink,
   poolLifecycle,
@@ -156,6 +157,7 @@ describe("insurance", () => {
     const proposal = await get_pda_from_seeds([
       global.lp.toBuffer(),
       global.insurance.toBuffer(),
+      Buffer.from(proposalId)
     ]);
     const proposalProposer = await create_keypair();
     const proposalTokenAccount = await getAssociatedTokenAddress(
@@ -166,9 +168,10 @@ describe("insurance", () => {
 
     await program.methods
       .proposeInsuranceProposal(
+        proposalId,
+        proposalMetadataLink,
         proposedCommision,
         proposeduUndercollaterization,
-        proposalMetadataLink
       )
       .accounts({
         proposalProposer: proposalProposer.publicKey,

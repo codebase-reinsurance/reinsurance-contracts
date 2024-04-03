@@ -65,15 +65,17 @@ pub mod insurance {
 
     pub fn propose_insurance_proposal(
         ctx: Context<ProposeInsuranceProposal>,
+        proposal_id: String,
+        proposal_docs: String,
         proposed_commision: u64,
         proposed_undercollaterization: u64,
-        proposal_docs: String,
     ) -> Result<()> {
         propose_insurance_proposal::handler(
             ctx,
+            proposal_id,
+            proposal_docs,
             proposed_commision,
             proposed_undercollaterization,
-            proposal_docs,
         )
     }
     pub fn accept_reinsurance_proposal(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
