@@ -44,7 +44,7 @@ pub struct VoteClaim<'info> {
         bump
     )]
     pub claim_vote_account: Account<'info, ClaimVoteAccount>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,

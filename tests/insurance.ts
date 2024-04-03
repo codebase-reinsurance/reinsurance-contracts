@@ -46,6 +46,7 @@ import {
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { rpcConfig } from "./test_config";
+import { assert } from "chai";
 
 describe("insurance", () => {
   // Configure the client to use the local cluster.
@@ -386,6 +387,68 @@ describe("insurance", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([global.insuranceCreator])
+      .rpc(rpcConfig);
+    global.claim = claim;
+  });
+  it("Vote claim", async () => {
+    const claimTokenAccount = await getAssociatedTokenAddress(
+      global.mintAddress,
+      global.claim,
+      true
+    );
+
+    const claimVoteAccount = await get_pda_from_seeds([
+      Buffer.from("vote_account"),
+      global.claim.toBuffer(),
+      global.securityAddr.publicKey.toBuffer(),
+    ]);
+
+    await program.methods
+      .voteClaim(securityAmount, true)
+      .accounts({
+        voter: global.securityAddr.publicKey,
+        voterTokenAccount: global.securityAddrUSDCAccount.address,
+        claim: global.claim,
+        claimTokenAccount: claimTokenAccount,
+        claimVoteAccount: claimVoteAccount,
+        usdcMint: global.mintAddress,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.securityAddr])
+      .rpc(rpcConfig);
+    global.claimVoteAccount = claimVoteAccount;
+    global.claimTokenAccount = claimTokenAccount;
+  });
+  it("Make claim decision", async () => {
+    await sleep(5);
+    const notifier = await create_keypair();
+    await program.methods
+      .claimDecision()
+      .accounts({
+        decisionAsker: notifier.publicKey,
+        claim: global.claim,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([notifier])
+      .rpc(rpcConfig);
+  });
+  it("Get voting rewards", async () => {
+    await program.methods
+      .claimVotingReward(securityAmount)
+      .accounts({
+        voter: global.securityAddr.publicKey,
+        claim: global.claim,
+        voterTokenAccount: global.securityAddrUSDCAccount.address,
+        claimTokenAccount: global.claimTokenAccount,
+        claimVoteAccount: global.claimVoteAccount,
+        usdcMint: global.mintAddress,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.securityAddr])
       .rpc(rpcConfig);
   });
   it("Propose strategy", async () => {

@@ -11,7 +11,7 @@ pub struct ClaimDecision<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<ClaimDecision>) -> Result<()> {
+pub fn handler(ctx: Context<ClaimDecision>) -> Result<bool> {
     let claim = &mut ctx.accounts.claim;
     let current_time = Clock::get()?.unix_timestamp;
 
@@ -31,5 +31,5 @@ pub fn handler(ctx: Context<ClaimDecision>) -> Result<()> {
         decision: claim.accepted.unwrap()
     });
 
-    Ok(())
+    Ok((claim.accepted.unwrap()))
 }

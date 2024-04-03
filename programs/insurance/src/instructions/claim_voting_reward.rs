@@ -38,7 +38,7 @@ pub struct ClaimVotingReward<'info> {
         bump=claim_vote_account.bump
     )]
     pub claim_vote_account: Account<'info, ClaimVoteAccount>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
@@ -57,14 +57,17 @@ pub fn handler(ctx: Context<ClaimVotingReward>, reward_amount: u64) -> Result<()
         InsuranceEnumError::ClaimVoteDidNotWin
     );
 
+    let extra_claim_amount = reward_amount - claim_vote_account.vote_amount;
     if claim_vote_account.voted_for {
         require!(
-            reward_amount * claim.vote_for == claim_vote_account.vote_amount * claim.vote_against,
+            extra_claim_amount * claim_vote_account.vote_amount
+                == claim.vote_for * claim.vote_against,
             InsuranceEnumError::IncorrectRewardAmount
         );
     } else {
         require!(
-            reward_amount * claim.vote_against == claim_vote_account.vote_amount * claim.vote_for,
+            extra_claim_amount * claim_vote_account.vote_amount
+                == claim.vote_against * claim.vote_for,
             InsuranceEnumError::IncorrectRewardAmount
         );
     }
@@ -76,8 +79,6 @@ pub fn handler(ctx: Context<ClaimVotingReward>, reward_amount: u64) -> Result<()
         &[claim.bump],
     ]];
 
-    let transfer_amount = claim_vote_account.vote_amount + reward_amount;
-
     transfer(
         CpiContext::new_with_signer(
             token_program.to_account_info(),
@@ -88,7 +89,7 @@ pub fn handler(ctx: Context<ClaimVotingReward>, reward_amount: u64) -> Result<()
             },
             signer_seeds,
         ),
-        transfer_amount,
+        reward_amount,
     )?;
 
     claim_vote_account.vote_amount = 0;

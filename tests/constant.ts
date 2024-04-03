@@ -24,7 +24,7 @@ const tokenName = "Hi!";
 const tokenimage = "BRR";
 const tokenMetadata =
   "https://en.wikipedia.org/wiki/File:Bonnet_macaque_(Macaca_radiata)_Photograph_By_Shantanu_Kuveskar.jpg";
-const mintAmount: number = 20000;
+const mintAmount: number = 200000;
 const strategyId: string = "1";
 const streamPayment: BN = new BN(1);
 const streamEvery: BN = new BN(10000);

@@ -96,7 +96,7 @@ pub mod insurance {
         call_off_reinsurance::handler(ctx)
     }
 
-    pub fn claim_decision(ctx: Context<ClaimDecision>) -> Result<()> {
+    pub fn claim_decision(ctx: Context<ClaimDecision>) -> Result<bool> {
         claim_decision::handler(ctx)
     }
 
