@@ -11,9 +11,7 @@ use anchor_spl::{
 
 #[derive(Accounts)]
 pub struct ReleaseSecurity<'info> {
-    pub lp_creator: Signer<'info>,
-    /// CHECK: Seed checks done later
-    pub insurance_creator: AccountInfo<'info>,
+    pub insurance_creator: Signer<'info>,
     #[account(
         mut,
         constraint = insurance_creator_token_account.mint==usdc_mint.key(),
@@ -23,7 +21,7 @@ pub struct ReleaseSecurity<'info> {
     #[account(
         mut,
         seeds = [
-            lp_creator.key().as_ref(),
+            lp.lp_creator.as_ref(),
             b"LP"
         ],
         bump=lp.bump
@@ -46,7 +44,7 @@ pub struct ReleaseSecurity<'info> {
     pub insurance: Account<'info, Insurance>,
     #[account(
         seeds = [
-            lp_creator.key().as_ref(),
+            lp.key().as_ref(),
             insurance.key().as_ref(),
             proposal.proposal_id.as_bytes()
         ],
@@ -54,7 +52,7 @@ pub struct ReleaseSecurity<'info> {
         constraint = proposal.proposal_accepted == true
     )]
     pub proposal: Account<'info, ReInsuranceProposal>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     #[account(
         mut,
@@ -76,7 +74,6 @@ pub struct ReleaseSecurity<'info> {
 pub fn handler(ctx: Context<ReleaseSecurity>) -> Result<()> {
     let lp = &mut ctx.accounts.lp;
     let lp_usdc_account = &mut ctx.accounts.lp_usdc_account;
-    let lp_creator = &ctx.accounts.lp_creator;
     let insurance_creator_token_account = &mut ctx.accounts.insurance_creator_token_account;
     let proposal = &ctx.accounts.proposal;
     let claim = &mut ctx.accounts.claim;
@@ -84,7 +81,7 @@ pub fn handler(ctx: Context<ReleaseSecurity>) -> Result<()> {
 
     let transfer_amount = claim.claim_amount;
 
-    let binding = lp_creator.key();
+    let binding = lp.lp_creator;
     let lp_signer_seeds: &[&[&[u8]]] = &[&[binding.as_ref(), b"LP", &[lp.bump]]];
 
     transfer(

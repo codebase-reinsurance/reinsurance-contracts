@@ -67,5 +67,5 @@ export {
   claimAmount,
   claimMetadataLink,
   poolLifecycle,
-  proposalId
+  proposalId,
 };

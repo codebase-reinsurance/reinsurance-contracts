@@ -53,7 +53,7 @@ pub struct ReInsuranceProposalProposed {
     pub insurance: Pubkey,
     pub proposal_docs: String,
     pub proposal: Pubkey,
-    pub proposal_id: String
+    pub proposal_id: String,
 }
 
 #[event]

@@ -47,7 +47,6 @@ import {
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { rpcConfig } from "./test_config";
-import { assert } from "chai";
 
 describe("insurance", () => {
   // Configure the client to use the local cluster.
@@ -157,7 +156,7 @@ describe("insurance", () => {
     const proposal = await get_pda_from_seeds([
       global.lp.toBuffer(),
       global.insurance.toBuffer(),
-      Buffer.from(proposalId)
+      Buffer.from(proposalId),
     ]);
     const proposalProposer = await create_keypair();
     const proposalTokenAccount = await getAssociatedTokenAddress(
@@ -171,7 +170,7 @@ describe("insurance", () => {
         proposalId,
         proposalMetadataLink,
         proposedCommision,
-        proposeduUndercollaterization,
+        proposeduUndercollaterization
       )
       .accounts({
         proposalProposer: proposalProposer.publicKey,
@@ -246,6 +245,7 @@ describe("insurance", () => {
       .rpc(rpcConfig);
     global.mintAddress = mintAddress;
     global.securityAddr = securityAddr;
+    global.lpMintAccount = lpMintAccount;
     global.securityAddrUSDCAccount = securityAddrUSDCAccount;
     global.securityAdrrTokenAccount = securityAdrrTokenAccount;
   });
@@ -372,6 +372,7 @@ describe("insurance", () => {
       .rpc(rpcConfig);
     global.premiumVault = premiumVault;
     global.premiumVaultTokenAccount = premiumVaultTokenAccount;
+    global.insuranceCreatorUsdcAccount = insuranceCreatorUsdcAccount;
   });
   it("Raise claim", async () => {
     const claim = await get_pda_from_seeds([
@@ -452,6 +453,26 @@ describe("insurance", () => {
         systemProgram: web3.SystemProgram.programId,
       })
       .signers([global.securityAddr])
+      .rpc(rpcConfig);
+  });
+  it("Release claim", async () => {
+    await program.methods
+      .releaseSecurity()
+      .accounts({
+        insuranceCreator: global.insuranceCreator.publicKey,
+        insurance: global.insurance,
+        insuranceCreatorTokenAccount:
+          global.insuranceCreatorUsdcAccount.address,
+        lp: global.lp,
+        lpUsdcAccount: global.lpMintAccount,
+        proposal: global.proposal,
+        usdcMint: global.mintAddress,
+        claim: global.claim,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([global.insuranceCreator])
       .rpc(rpcConfig);
   });
   it("Propose strategy", async () => {

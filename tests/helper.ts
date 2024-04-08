@@ -42,16 +42,6 @@ async function get_metadata_account(mintKeypair) {
     TOKEN_METADATA_PROGRAM_ID
   )[0];
 }
-async function get_metadata_account(mintKeypair) {
-  return anchor.web3.PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mintKeypair.toBuffer(),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  )[0];
-}
 
 function calculate_expiry_time(
   durationInSeconds = 60 * 24 * 60 * 60,

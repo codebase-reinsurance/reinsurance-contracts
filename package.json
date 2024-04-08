@@ -8,7 +8,8 @@
         "@metaplex-foundation/solita": "^0.20.1",
         "@project-serum/anchor": "^0.26.0",
         "@saberhq/solana-contrib": "^1.15.0",
-        "@solana/spl-token": "^0.4.0"
+        "@solana/spl-token": "^0.4.0",
+        "reinsurance-sdk": "file:reinsurance-sdk"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",
