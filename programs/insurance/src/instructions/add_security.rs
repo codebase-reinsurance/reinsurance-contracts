@@ -47,7 +47,7 @@ pub struct AddSecurity<'info> {
         associated_token::authority = lp,
         constraint = security_mint.amount >= transfer_amount
     )]
-    pub security_mint: Account<'info, TokenAccount>,
+    pub security_mint: Box<Account<'info, TokenAccount>>,
     #[account(
         mint::authority = tokenised_mint,
         mint::decimals = DEFAULT_MINT_DECIMALS,
@@ -58,7 +58,7 @@ pub struct AddSecurity<'info> {
         ],
         bump
     )]
-    pub tokenised_mint: Account<'info, Mint>,
+    pub tokenised_mint: Box<Account<'info, Mint>>,
     // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,

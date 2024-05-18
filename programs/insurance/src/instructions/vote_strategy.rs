@@ -24,7 +24,7 @@ pub struct VoteStrategy<'info> {
         ],
         bump=lp.bump
     )]
-    pub lp: Account<'info, LP>,
+    pub lp: Box<Account<'info, LP>>,
     #[account(
         mint::decimals = DEFAULT_MINT_DECIMALS,
         seeds = [
@@ -34,7 +34,7 @@ pub struct VoteStrategy<'info> {
         ],
         bump
     )]
-    pub tokenised_mint: Account<'info, Mint>,
+    pub tokenised_mint: Box<Account<'info, Mint>>,
     #[account(
         seeds = [
             insurance.insurer.key().as_ref(),
@@ -43,7 +43,7 @@ pub struct VoteStrategy<'info> {
         bump=insurance.bump,
         constraint = insurance.reinsured == true
     )]
-    pub insurance: Account<'info, Insurance>,
+    pub insurance: Box<Account<'info, Insurance>>,
     #[account(
         mut,
         associated_token::mint = tokenised_mint,
@@ -69,7 +69,7 @@ pub struct VoteStrategy<'info> {
         ],
         bump=premium_vault.bump
     )]
-    pub premium_vault: Account<'info, PremiumVault>,
+    pub premium_vault: Box<Account<'info, PremiumVault>>,
     #[account(
         mut,
         seeds = [
